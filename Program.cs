@@ -37,6 +37,7 @@ builder.Services.AddScoped<IBookingServiceRepository, BookingServiceRepository>(
 //Service
 builder.Services.AddScoped<IConferenceHallService, ConferenceHallService>();
 builder.Services.AddScoped<IAdditionalServiceService, AdditionalServiceService>();
+builder.Services.AddScoped<IBookingManagementService, BookingManagementService>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
