@@ -1,7 +1,13 @@
 using ConferenceBooking.Api.Data;
+using ConferenceBooking.Api.Mappings;
+using ConferenceBooking.Api.Repository;
+using ConferenceBooking.Api.Repository.Interfaces;
+using ConferenceBooking.Api.Services;
+using ConferenceBooking.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Reflection;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +27,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Controllers
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
+//Repository
+builder.Services.AddScoped<IConferenceHallRepository, ConferenceHallRepository>();
+builder.Services.AddScoped<IAdditionalServiceRepository, AdditionalServiceRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IBookingServiceRepository, BookingServiceRepository>();
+
+//Service
+builder.Services.AddScoped<IConferenceHallService, ConferenceHallService>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -34,7 +49,7 @@ builder.Services.AddSwaggerGen(options =>
         options.IncludeXmlComments(xmlPath);
     }
 });
-
+MapsterConfig.RegisterMappings();
 var app = builder.Build();
 
 // Middleware
