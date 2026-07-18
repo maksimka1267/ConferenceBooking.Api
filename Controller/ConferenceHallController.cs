@@ -1,4 +1,4 @@
-﻿using ConferenceBooking.Api.DTOs.ConferenceHall;
+﻿using ConferenceBooking.Api.Models.DTOs.ConferenceHall;
 using ConferenceBooking.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

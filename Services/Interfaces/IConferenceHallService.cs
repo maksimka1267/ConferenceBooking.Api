@@ -1,4 +1,4 @@
-﻿using ConferenceBooking.Api.DTOs.ConferenceHall;
+﻿using ConferenceBooking.Api.Models.DTOs.ConferenceHall;
 
 namespace ConferenceBooking.Api.Services.Interfaces;
 
