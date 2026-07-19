@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Reflection;
 using FluentValidation.AspNetCore;
+using ClickHouse.Client.ADO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("PostgreSql")));
 
+// ClickHouse
+builder.Services.AddScoped<ClickHouseConnection>(_ =>
+    new ClickHouseConnection(
+        builder.Configuration.GetConnectionString("ClickHouse")));
+
 // Controllers
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation();
@@ -33,11 +39,13 @@ builder.Services.AddScoped<IConferenceHallRepository, ConferenceHallRepository>(
 builder.Services.AddScoped<IAdditionalServiceRepository, AdditionalServiceRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IBookingServiceRepository, BookingServiceRepository>();
+builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
 
 //Service
 builder.Services.AddScoped<IConferenceHallService, ConferenceHallService>();
 builder.Services.AddScoped<IAdditionalServiceService, AdditionalServiceService>();
 builder.Services.AddScoped<IBookingManagementService, BookingManagementService>();
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

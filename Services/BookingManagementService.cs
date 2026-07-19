@@ -1,4 +1,5 @@
 ﻿using ConferenceBooking.Api.DTOs.Booking;
+using ConferenceBooking.Api.Models.Analytics;
 using ConferenceBooking.Api.Models.Entities;
 using ConferenceBooking.Api.Repository.Interfaces;
 using ConferenceBooking.Api.Services.Interfaces;
@@ -12,15 +13,18 @@ namespace ConferenceBooking.Api.Services
         private readonly IConferenceHallRepository _conferenceHallRepository;
         private readonly IAdditionalServiceRepository _additionalServiceRepository;
         private readonly IBookingServiceRepository _bookingServiceRepository;
+        private readonly IAnalyticsRepository _analyticsRepository;
         public BookingManagementService(IBookingRepository bookingRepository,
                             IConferenceHallRepository conferenceHallRepository,
                             IAdditionalServiceRepository additionalServiceRepository,
-                            IBookingServiceRepository bookingServiceRepository)
+                            IBookingServiceRepository bookingServiceRepository,
+                            IAnalyticsRepository analyticsRepository)
         {
             _bookingRepository = bookingRepository;
             _conferenceHallRepository = conferenceHallRepository;
             _additionalServiceRepository = additionalServiceRepository;
             _bookingServiceRepository = bookingServiceRepository;
+            _analyticsRepository = analyticsRepository;
         }
         public async Task<IEnumerable<AvailableConferenceHallResponse>> GetAvailableAsync(DateTime start,DateTime end,int capacity)
         {
@@ -61,6 +65,18 @@ namespace ConferenceBooking.Api.Services
             await _bookingRepository.SaveChangesAsync();
 
             await SaveBookingServicesAsync(booking, services);
+
+            await _analyticsRepository.SaveBookingAsync(new BookingAnalytics
+            {
+                BookingId = booking.Id,
+                HallId = hall.Id,
+                HallName = hall.Name,
+                StartTime = booking.StartTime,
+                EndTime = booking.EndTime,
+                TotalPrice = booking.TotalPrice,
+                ServiceCount = services.Count(),
+                CreatedAt = booking.CreatedAt
+            });
 
             booking.BookedServices = services.Select(x => new BookingService
             {

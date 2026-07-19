@@ -1,0 +1,21 @@
+﻿using ConferenceBooking.Api.DTOs.Analytics;
+using ConferenceBooking.Api.Repository.Interfaces;
+using ConferenceBooking.Api.Services.Interfaces;
+
+namespace ConferenceBooking.Api.Services
+{
+    public class AnalyticsService : IAnalyticsService
+    {
+        private readonly IAnalyticsRepository _analyticsRepository;
+
+        public AnalyticsService(IAnalyticsRepository analyticsRepository)
+        {
+            _analyticsRepository = analyticsRepository;
+        }
+
+        public async Task<RevenueReportResponse> GetRevenueReportAsync()
+        {
+            return await _analyticsRepository.GetRevenueReportAsync();
+        }
+    }
+}
