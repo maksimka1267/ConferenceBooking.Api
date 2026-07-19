@@ -26,5 +26,14 @@ namespace ConferenceBooking.Api.Services
         {
             return await _analyticsRepository.GetDailyRevenueAsync();
         }
+        public async Task<DashboardResponse> GetDashboardAsync()
+        {
+            return await _analyticsRepository.GetDashboardAsync();
+        }
+
+        public async Task<IEnumerable<HallUtilizationResponse>> GetHallUtilizationAsync()
+        {
+            return await _analyticsRepository.GetHallUtilizationAsync();
+        }
     }
 }

@@ -10,4 +10,6 @@ public interface IAnalyticsRepository
     Task<RevenueReportResponse> GetRevenueReportAsync();
     Task<IEnumerable<PopularHallResponse>> GetPopularHallsAsync();
     Task<IEnumerable<DailyRevenueResponse>> GetDailyRevenueAsync();
+    Task<DashboardResponse> GetDashboardAsync();
+    Task<IEnumerable<HallUtilizationResponse>> GetHallUtilizationAsync();
 }

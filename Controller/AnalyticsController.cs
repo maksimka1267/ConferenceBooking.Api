@@ -35,4 +35,15 @@ public class AnalyticsController : ControllerBase
 
         return Ok(result);
     }
+    [HttpGet("dashboard")]
+    public async Task<IActionResult> GetDashboard()
+    {
+        return Ok(await _analyticsService.GetDashboardAsync());
+    }
+
+    [HttpGet("hall-utilization")]
+    public async Task<IActionResult> GetHallUtilization()
+    {
+        return Ok(await _analyticsService.GetHallUtilizationAsync());
+    }
 }

@@ -231,4 +231,126 @@ public class AnalyticsRepository : IAnalyticsRepository
             }
         }
     }
+    public async Task<DashboardResponse> GetDashboardAsync()
+    {
+        try
+        {
+            await _connection.OpenAsync();
+
+            await using var command = _connection.CreateCommand();
+
+            command.CommandText =
+            """
+        SELECT
+            COUNT() AS TotalBookings,
+            SUM(TotalPrice) AS TotalRevenue,
+            AVG(TotalPrice) AS AverageBookingPrice,
+            (
+                SELECT HallName
+                FROM booking_analytics
+                GROUP BY HallName
+                ORDER BY COUNT() DESC
+                LIMIT 1
+            ) AS MostPopularHall
+        FROM booking_analytics
+        """;
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            if (await reader.ReadAsync())
+            {
+                return new DashboardResponse
+                {
+                    TotalBookings = reader.IsDBNull(0)
+                        ? 0
+                        : reader.GetInt32(0),
+
+                    TotalRevenue = reader.IsDBNull(1)
+                        ? 0
+                        : reader.GetDecimal(1),
+
+                    AverageBookingPrice = reader.IsDBNull(2)
+                        ? 0
+                        : reader.GetDecimal(2),
+
+                    MostPopularHall = reader.IsDBNull(3)
+                        ? string.Empty
+                        : reader.GetString(3)
+                };
+            }
+
+            return new DashboardResponse();
+        }
+        catch
+        {
+            throw;
+        }
+        finally
+        {
+            if (_connection.State != System.Data.ConnectionState.Closed)
+            {
+                await _connection.CloseAsync();
+            }
+        }
+    }
+    public async Task<IEnumerable<HallUtilizationResponse>> GetHallUtilizationAsync()
+    {
+        try
+        {
+            await _connection.OpenAsync();
+
+            await using var command = _connection.CreateCommand();
+
+            command.CommandText =
+            """
+        SELECT
+            HallName,
+            COUNT() AS BookingCount,
+            SUM(dateDiff('hour', StartTime, EndTime)) AS TotalBookedHours,
+            AVG(dateDiff('hour', StartTime, EndTime)) AS AverageBookingDuration
+        FROM booking_analytics
+        GROUP BY HallName
+        ORDER BY TotalBookedHours DESC
+        """;
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var result = new List<HallUtilizationResponse>();
+
+            while (await reader.ReadAsync())
+            {
+                result.Add(new HallUtilizationResponse
+                {
+                    HallName = reader.IsDBNull(0)
+                        ? string.Empty
+                        : reader.GetString(0),
+
+                    BookingCount = reader.IsDBNull(1)
+                        ? 0
+                        : reader.GetInt32(1),
+
+                    TotalBookedHours = reader.IsDBNull(2)
+                        ? 0
+                        : reader.GetDouble(2),
+
+                    AverageBookingDuration = reader.IsDBNull(3)
+                        ? 0
+                        : reader.GetDouble(3)
+                });
+            }
+
+            return result;
+        }
+        catch
+        {
+            throw;
+        }
+        finally
+        {
+            if (_connection.State != System.Data.ConnectionState.Closed)
+            {
+                await _connection.CloseAsync();
+            }
+        }
+    }
 }
