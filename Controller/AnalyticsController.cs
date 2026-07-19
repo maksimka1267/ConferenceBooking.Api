@@ -28,4 +28,11 @@ public class AnalyticsController : ControllerBase
 
         return Ok(result);
     }
+    [HttpGet("daily-revenue")]
+    public async Task<IActionResult> GetDailyRevenue()
+    {
+        var result = await _analyticsService.GetDailyRevenueAsync();
+
+        return Ok(result);
+    }
 }

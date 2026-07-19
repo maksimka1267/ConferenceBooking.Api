@@ -7,5 +7,6 @@ namespace ConferenceBooking.Api.Services.Interfaces
     {
         Task<RevenueReportResponse> GetRevenueReportAsync();
         Task<IEnumerable<PopularHallResponse>> GetPopularHallsAsync();
+        Task<IEnumerable<DailyRevenueResponse>> GetDailyRevenueAsync();
     }
 }

@@ -9,4 +9,5 @@ public interface IAnalyticsRepository
     Task SaveBookingAsync(BookingAnalytics booking);
     Task<RevenueReportResponse> GetRevenueReportAsync();
     Task<IEnumerable<PopularHallResponse>> GetPopularHallsAsync();
+    Task<IEnumerable<DailyRevenueResponse>> GetDailyRevenueAsync();
 }
