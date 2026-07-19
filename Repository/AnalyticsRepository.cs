@@ -2,6 +2,7 @@
 using ClickHouse.Client.Utility;
 using ConferenceBooking.Api.DTOs.Analytics;
 using ConferenceBooking.Api.Models.Analytics;
+using ConferenceBooking.Api.Models.Analytics.DTO;
 using ConferenceBooking.Api.Repository.Interfaces;
 
 namespace ConferenceBooking.Api.Repository;
@@ -111,6 +112,59 @@ public class AnalyticsRepository : IAnalyticsRepository
             }
 
             return new RevenueReportResponse();
+        }
+        catch
+        {
+            throw;
+        }
+        finally
+        {
+            if (_connection.State != System.Data.ConnectionState.Closed)
+            {
+                await _connection.CloseAsync();
+            }
+        }
+    }
+    public async Task<IEnumerable<PopularHallResponse>> GetPopularHallsAsync()
+    {
+        try
+        {
+            await _connection.OpenAsync();
+
+            await using var command = _connection.CreateCommand();
+
+            command.CommandText =
+            """
+        SELECT
+            HallName,
+            COUNT() AS BookingCount,
+            SUM(TotalPrice) AS TotalRevenue
+        FROM booking_analytics
+        GROUP BY HallName
+        ORDER BY BookingCount DESC
+        """;
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var result = new List<PopularHallResponse>();
+
+            while (await reader.ReadAsync())
+            {
+                result.Add(new PopularHallResponse
+                {
+                    HallName = reader.GetString(0),
+
+                    BookingCount = reader.IsDBNull(1)
+                        ? 0
+                        : reader.GetInt32(1),
+
+                    TotalRevenue = reader.IsDBNull(2)
+                        ? 0
+                        : reader.GetDecimal(2)
+                });
+            }
+
+            return result;
         }
         catch
         {

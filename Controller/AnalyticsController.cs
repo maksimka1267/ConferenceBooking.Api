@@ -21,4 +21,11 @@ public class AnalyticsController : ControllerBase
 
         return Ok(result);
     }
+    [HttpGet("popular-halls")]
+    public async Task<IActionResult> GetPopularHalls()
+    {
+        var result = await _analyticsService.GetPopularHallsAsync();
+
+        return Ok(result);
+    }
 }
